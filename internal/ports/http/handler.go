@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tinhtt/go-doctor-appointment/internal/domain"
 )
 
 func NewHandler() http.Handler {
@@ -14,7 +15,11 @@ func NewHandler() http.Handler {
 	return router
 }
 
-type Handler struct{}
+type Handler struct {
+	appointments domain.AppointmentRepository
+	calendars    domain.CalendarRepository
+	doctors      domain.DoctorRepository
+}
 
 func (h *Handler) do(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
