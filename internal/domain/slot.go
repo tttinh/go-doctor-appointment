@@ -2,9 +2,9 @@ package domain
 
 import "time"
 
+// Slot represents an available time slot of a doctor.
 type Slot struct {
 	Base
-	Hour   time.Time
-	Status string // available, unavailable, booked, cancelled,
-	Note   string
+	Available bool
+	Hour      time.Time
 }

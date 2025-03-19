@@ -6,5 +6,5 @@ type Appointment struct {
 	DoctorID  int
 	PatientID int
 	Note      string
-	Status    string // created, cancelled, rescheduled
+	Status    string // booked, cancelled, rescheduled
 }
