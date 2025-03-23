@@ -10,7 +10,7 @@ import (
 
 	"github.com/lmittmann/tint"
 	"github.com/tinhtt/go-doctor-appointment/internal/adapters"
-	"github.com/tinhtt/go-doctor-appointment/internal/ports"
+	httpport "github.com/tinhtt/go-doctor-appointment/internal/ports/http"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 	}
 	l.Info("run database migration successfully!")
 
-	s := ports.NewHTTPServer()
+	s := httpport.NewHTTPServer()
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			l.Error("unable to run server", "err", err)
