@@ -9,7 +9,10 @@ import (
 
 func NewHandler() http.Handler {
 	h := Handler{}
-	router := gin.Default()
+
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Logger(), gin.Recovery())
 	api := router.Group("/api")
 	api.GET("", h.do)
 	return router
