@@ -6,19 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewHTTPServer() *http.Server {
+func NewHandler() http.Handler {
 	h := handler{}
 
-	return &http.Server{
-		Addr:    ":8080",
-		Handler: h.makeRouter(),
-	}
-}
-
-type handler struct {
-}
-
-func (h handler) makeRouter() http.Handler {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
@@ -42,6 +32,9 @@ func (h handler) makeRouter() http.Handler {
 	api.POST("/patient/appointment", h.todo)
 
 	return router
+}
+
+type handler struct {
 }
 
 func (h *handler) todo(c *gin.Context) {
