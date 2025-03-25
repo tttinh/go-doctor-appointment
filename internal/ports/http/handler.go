@@ -15,15 +15,15 @@ func NewHandler() http.Handler {
 	api := router.Group("/api")
 
 	// Public resources.
-	api.GET("/doctor/:id/calendar", h.todo)
+	api.GET("/doctor/:id/calendar", h.getCalendar)
 
 	// Private resources.
 	// Doctors operations
-	api.POST("/doctor/signup", h.todo)
-	api.POST("/doctor/signin", h.todo)
-	api.POST("/doctor/slot", h.todo)
-	api.PUT("/doctor/slot/:id", h.todo)
-	api.GET("/doctor/appointment", h.todo)
+	api.POST("/doctor/signup", h.signupDoctor)
+	api.POST("/doctor/signin", h.signinDoctor)
+	api.POST("/doctor/slot", h.createSlots)
+	api.PUT("/doctor/slot/:id", h.updateSlot)
+	api.GET("/doctor/appointment", h.listDoctorAppointments)
 
 	// Patients operations
 	api.POST("/patient/signup", h.todo)
