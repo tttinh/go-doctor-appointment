@@ -25,16 +25,27 @@ type Patient struct {
 	UpdatedAt time.Time
 }
 
+var invalidDoctor = Doctor{}
+var invalidPatient = Patient{}
+
 type UserService struct {
 	repo UserRepository
 }
 
 func (s UserService) SignupDoctor(ctx context.Context, d Doctor) (Doctor, error) {
-	return Doctor{}, nil
+	d, err := s.repo.CreateDoctor(ctx, d)
+	if err != nil {
+		return invalidDoctor, nil
+	}
+	return d, nil
 }
 
 func (s UserService) SignupPatient(ctx context.Context, p Patient) (Patient, error) {
-	return Patient{}, nil
+	p, err := s.repo.CreatePatient(ctx, p)
+	if err != nil {
+		return invalidPatient, nil
+	}
+	return p, nil
 }
 
 func (s UserService) SigninDoctor(
@@ -42,7 +53,16 @@ func (s UserService) SigninDoctor(
 	username string,
 	password string,
 ) (Doctor, error) {
-	return Doctor{}, nil
+	d, err := s.repo.GetDoctorByUsername(ctx, username)
+	if err != nil {
+		return invalidDoctor, err
+	}
+
+	if password != d.Password {
+		return invalidDoctor, ErrInvalidPassword
+	}
+
+	return d, nil
 }
 
 func (s UserService) SigninPatient(
@@ -50,5 +70,14 @@ func (s UserService) SigninPatient(
 	username string,
 	password string,
 ) (Patient, error) {
-	return Patient{}, nil
+	p, err := s.repo.GetPatientByUsername(ctx, username)
+	if err != nil {
+		return invalidPatient, err
+	}
+
+	if password != p.Password {
+		return invalidPatient, ErrInvalidPassword
+	}
+
+	return p, nil
 }
