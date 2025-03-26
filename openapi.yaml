@@ -9,15 +9,17 @@ info:
     url: https://opensource.org/licenses/MIT
   version: 1.0.0
 tags:
-  - name: doctor
-  - name: patient
+  - name: auth
+  - name: slot
+  - name: appointment
+  - name: calendar
 servers:
   - url: http://localhost:8080/api
 paths:
   /doctor/signup:
     post:
       tags:
-        - doctor
+        - auth
       operationId: signupDoctor
       description: Create a new doctor account.
       requestBody:
@@ -36,7 +38,7 @@ paths:
   /doctor/signin:
     post:
       tags:
-        - doctor
+        - auth
       operationId: signinDoctor
       description: Logs a doctor into the system.
       requestBody:
@@ -52,11 +54,49 @@ paths:
           description: Not found entity.
         "5XX":
           description: Unexpected error.
-  /doctor/{id}/calendar:
+  /patient/signup:
+    post:
+      tags:
+        - auth
+      operationId: signupPatient
+      description: Create a new patient account.
+      requestBody:
+        $ref: '#/components/requestBodies/SignupPatientReq'
+      responses:
+        '200':
+          $ref: '#/components/responses/SignupPatientRes'
+        "400":
+          $ref: '#/components/responses/ErrorRes'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found entity.
+        "5XX":
+          description: Unexpected error.
+  /patient/signin:
+    post:
+      tags:
+        - auth
+      operationId: signinPatient
+      description: Logs a patient into the system.
+      requestBody:
+        $ref: '#/components/requestBodies/SigninPatientReq'
+      responses:
+        '200':
+          $ref: '#/components/responses/SigninPatientRes'
+        "400":
+          $ref: '#/components/responses/ErrorRes'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found entity.
+        "5XX":
+          description: Unexpected error.
+  /calendar/{id}:
     get:
       tags:
-        - doctor
-      operationId: getDoctorCalendar
+        - calendar
+      operationId: getCalendar
       description: Get the doctor's calendar.
       parameters:
         - in: path
@@ -76,14 +116,14 @@ paths:
           description: Not found entity.
         "5XX":
           description: Unexpected error.
-  /doctor/slot:
+  /slot:
     post:
       security:
         - bearerAuth: []
       tags:
-        - doctor
+        - slot
       operationId: addSlots
-      description: Create available slots.
+      description: Create available slots for a doctor.
       requestBody:
         $ref: '#/components/requestBodies/AddSlotsReq'
       responses:
@@ -97,18 +137,18 @@ paths:
           description: Not found entity.
         "5XX":
           description: Unexpected error.
-  /doctor/slot/{id}:
+  /slot/{id}/availability:
     put:
       security:
         - bearerAuth: []
       tags:
-        - doctor
+        - slot
       operationId: updateSlotAvailability
       description: Update the availability of a slot.
       parameters:
         - in: path
           name: id
-          description: ID of the slot
+          description: ID of the slot.
           schema:
             type: integer
           required: true
@@ -125,71 +165,14 @@ paths:
           description: Not found entity.
         "5XX":
           description: Unexpected error.
-  /doctor/appointment:
+  /appointment:
     get:
       security:
         - bearerAuth: []
       tags:
-        - doctor
-      operationId: listDoctorAppointments
-      description: Get appointments of the current week
-      responses:
-        '200':
-          description: OK.
-        "400":
-          $ref: '#/components/responses/ErrorRes'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found entity.
-        "5XX":
-          description: Unexpected error.
-  /patient/signup:
-    post:
-      tags:
-        - patient
-      operationId: signupPatient
-      description: Create a new patient account.
-      requestBody:
-        $ref: '#/components/requestBodies/SignupPatientReq'
-      responses:
-        '200':
-          $ref: '#/components/responses/SignupPatientRes'
-        "400":
-          $ref: '#/components/responses/ErrorRes'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found entity.
-        "5XX":
-          description: Unexpected error.
-  /patient/signin:
-    post:
-      tags:
-        - patient
-      operationId: signinPatient
-      description: Logs a patient into the system.
-      requestBody:
-        $ref: '#/components/requestBodies/SigninPatientReq'
-      responses:
-        '200':
-          $ref: '#/components/responses/SigninPatientRes'
-        "400":
-          $ref: '#/components/responses/ErrorRes'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found entity.
-        "5XX":
-          description: Unexpected error.
-  /patient/appointment:
-    get:
-      security:
-        - bearerAuth: []
-      tags:
-        - patient
-      operationId: listPatientAppointments
-      description: Get appointments of the current week
+        - appointment
+      operationId: listAppointments
+      description: Get appointments of the current week.
       responses:
         '200':
           description: OK.
@@ -205,14 +188,40 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - patient
+        - appointment
       operationId: createAppointment
-      description: Create a new appointment.
+      description: Book an appointment.
       requestBody:
         $ref: '#/components/requestBodies/CreateAppointmentReq'
       responses:
         '200':
           $ref: '#/components/responses/CreateAppointmentRes'
+        "400":
+          $ref: '#/components/responses/ErrorRes'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found entity.
+        "5XX":
+          description: Unexpected error.
+  /appointment/{id}:
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - appointment
+      operationId: removeAppointment
+      description: Cancel an appointment.
+      parameters:
+        - in: path
+          name: id
+          description: ID of the appointment.
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK.
         "400":
           $ref: '#/components/responses/ErrorRes'
         "401":
