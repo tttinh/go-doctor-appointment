@@ -12,7 +12,7 @@ type UserRepository interface {
 	CreatePatient(ctx context.Context, p Patient) (Patient, error)
 }
 
-type CalendarRepository interface {
+type SlotRepository interface {
 	CreateSlots(
 		ctx context.Context,
 		doctorID int,

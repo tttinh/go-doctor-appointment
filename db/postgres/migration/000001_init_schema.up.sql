@@ -2,40 +2,46 @@ BEGIN;
 
 
 CREATE TABLE IF NOT EXISTS doctor (
-  id serial,
-  uname TEXT NOT NULL,
-  upassword TEXT NOT NULL,
+  id SERIAL,
+  username TEXT NOT NULL,
+  email TEXT NOT NULL,
+  hashed_password TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (username),
+  UNIQUE (email)
 );
 
 
 CREATE TABLE IF NOT EXISTS patient (
-  id serial,
-  uname TEXT NOT NULL,
-  upassword TEXT NOT NULL,
+  id SERIAL,
+  username TEXT NOT NULL,
+  email TEXT NOT NULL,
+  hashed_password TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (username),
+  UNIQUE (email)
 );
 
 
 CREATE TABLE IF NOT EXISTS slot (
-  id BIGSERIAL,
+  id SERIAL,
   doctor_id INTEGER,
-  from_time TIMESTAMP,
-  to_time TIMESTAMP,
+  start_time TIMESTAMP,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   available BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (id),
-  FOREIGN key (doctor_id) REFERENCES doctor (id)
+  FOREIGN KEY (doctor_id) REFERENCES doctor (id),
+  UNIQUE (doctor_id, start_time)
 );
 
 
 CREATE TABLE IF NOT EXISTS appointment (
-  id BIGINT,
+  id INTEGER,
   patient_id INTEGER,
   note TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
