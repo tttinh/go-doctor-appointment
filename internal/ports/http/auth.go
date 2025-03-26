@@ -10,14 +10,10 @@ func (h handler) signinDoctor(c *gin.Context) {
 
 }
 
-func (h handler) createSlots(c *gin.Context) {
+func (h handler) signupPatient(c *gin.Context) {
 
 }
 
-func (h handler) updateSlot(c *gin.Context) {
-
-}
-
-func (h handler) listDoctorAppointments(c *gin.Context) {
+func (h handler) signinPatient(c *gin.Context) {
 
 }

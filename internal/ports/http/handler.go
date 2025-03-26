@@ -15,28 +15,21 @@ func NewHandler() http.Handler {
 	api := router.Group("/api")
 
 	// Public resources.
-	api.GET("/doctor/:id/calendar", h.getCalendar)
-
-	// Private resources.
-	// Doctors operations
+	api.GET("/calendar/:id", h.getCalendar)
 	api.POST("/doctor/signup", h.signupDoctor)
 	api.POST("/doctor/signin", h.signinDoctor)
-	api.POST("/doctor/slot", h.createSlots)
-	api.PUT("/doctor/slot/:id", h.updateSlot)
-	api.GET("/doctor/appointment", h.listDoctorAppointments)
+	api.POST("/patient/signup", h.signupPatient)
+	api.POST("/patient/signin", h.signinPatient)
 
-	// Patients operations
-	api.POST("/patient/signup", h.todo)
-	api.POST("/patient/signin", h.todo)
-	api.GET("/patient/appointment", h.todo)
-	api.POST("/patient/appointment", h.todo)
+	// Private resources.
+	api.POST("/slot", h.addSlots)
+	api.PUT("/slot/:id/availability", h.changeSlotAvailability)
+	api.PUT("/slot/:id/book", h.bookApointment)
+	api.PUT("/slot/:id/cancellation", h.cancelAppointment)
 
+	api.GET("/appointment", h.listAppointments)
 	return router
 }
 
 type handler struct {
-}
-
-func (h *handler) todo(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "TODO"})
 }

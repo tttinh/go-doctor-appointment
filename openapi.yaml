@@ -1,4 +1,4 @@
-openapi: 3.0.4
+openapi: 3.1.0
 info:
   title: Doctor Appointment API
   description: Doctor API documentation
@@ -19,7 +19,7 @@ paths:
       tags:
         - doctor
       operationId: signupDoctor
-      summary: Create a new doctor account.
+      description: Create a new doctor account.
       requestBody:
         $ref: '#/components/requestBodies/SignupDoctorReq'
       responses:
@@ -38,7 +38,7 @@ paths:
       tags:
         - doctor
       operationId: signinDoctor
-      summary: Logs a doctor into the system.
+      description: Logs a doctor into the system.
       requestBody:
         $ref: '#/components/requestBodies/SigninDoctorReq'
       responses:
@@ -57,7 +57,7 @@ paths:
       tags:
         - doctor
       operationId: getDoctorCalendar
-      summary: Get the doctor's calendar.
+      description: Get the doctor's calendar.
       parameters:
         - in: path
           name: id
@@ -83,7 +83,7 @@ paths:
       tags:
         - doctor
       operationId: addSlots
-      summary: Create available slots.
+      description: Create available slots.
       requestBody:
         $ref: '#/components/requestBodies/AddSlotsReq'
       responses:
@@ -104,7 +104,7 @@ paths:
       tags:
         - doctor
       operationId: updateSlotAvailability
-      summary: Update the availability of a slot.
+      description: Update the availability of a slot.
       parameters:
         - in: path
           name: id
@@ -132,7 +132,7 @@ paths:
       tags:
         - doctor
       operationId: listDoctorAppointments
-      summary: Get appointments of the current week
+      description: Get appointments of the current week
       responses:
         '200':
           description: OK.
@@ -149,7 +149,7 @@ paths:
       tags:
         - patient
       operationId: signupPatient
-      summary: Create a new patient account.
+      description: Create a new patient account.
       requestBody:
         $ref: '#/components/requestBodies/SignupPatientReq'
       responses:
@@ -168,7 +168,7 @@ paths:
       tags:
         - patient
       operationId: signinPatient
-      summary: Logs a patient into the system.
+      description: Logs a patient into the system.
       requestBody:
         $ref: '#/components/requestBodies/SigninPatientReq'
       responses:
@@ -189,7 +189,7 @@ paths:
       tags:
         - patient
       operationId: listPatientAppointments
-      summary: Get appointments of the current week
+      description: Get appointments of the current week
       responses:
         '200':
           description: OK.
@@ -207,7 +207,7 @@ paths:
       tags:
         - patient
       operationId: createAppointment
-      summary: Create a new appointment.
+      description: Create a new appointment.
       requestBody:
         $ref: '#/components/requestBodies/CreateAppointmentReq'
       responses:
