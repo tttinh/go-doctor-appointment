@@ -10,6 +10,8 @@ import (
 
 	"github.com/lmittmann/tint"
 	"github.com/tinhtt/go-doctor-appointment/internal/adapters"
+	"github.com/tinhtt/go-doctor-appointment/internal/adapters/postgres"
+	"github.com/tinhtt/go-doctor-appointment/internal/app"
 	"github.com/tinhtt/go-doctor-appointment/internal/ports"
 )
 
@@ -41,7 +43,12 @@ func main() {
 	}
 	l.Info("run database migration successfully!")
 
-	s := ports.NewHTTPServer()
+	// Init repositories, services, handlers.
+	userRepo := postgres.NewUsers(db)
+	slotRepo := postgres.NewSlots(db)
+	userService := app.NewUserService(userRepo)
+	slotService := app.NewSlotService(slotRepo)
+	s := ports.NewHTTPServer(userService, slotService)
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			l.Error("unable to run server", "err", err)

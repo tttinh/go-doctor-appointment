@@ -4,10 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tinhtt/go-doctor-appointment/internal/app"
 )
 
-func NewHandler() http.Handler {
-	h := handler{}
+func NewHandler(u app.UserService, s app.SlotService) http.Handler {
+	h := handler{
+		user: u,
+		slot: s,
+	}
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -34,4 +38,6 @@ func NewHandler() http.Handler {
 }
 
 type handler struct {
+	user app.UserService
+	slot app.SlotService
 }

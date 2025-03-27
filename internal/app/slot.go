@@ -28,6 +28,10 @@ type SlotService struct {
 	repo SlotRepository
 }
 
+func NewSlotService(repo SlotRepository) SlotService {
+	return SlotService{repo: repo}
+}
+
 func (s SlotService) AddSlots(ctx context.Context, doctorID int, slots []time.Time) error {
 	return s.repo.CreateSlots(ctx, doctorID, slots)
 }
