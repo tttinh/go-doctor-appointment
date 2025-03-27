@@ -1,13 +1,18 @@
 package httpport
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tinhtt/go-doctor-appointment/internal/app"
 )
 
-func NewHandler(u app.UserService, s app.SlotService) http.Handler {
+func NewHandler(
+	l *slog.Logger,
+	u app.UserService,
+	s app.SlotService,
+) http.Handler {
 	h := handler{
 		user: u,
 		slot: s,
@@ -15,7 +20,7 @@ func NewHandler(u app.UserService, s app.SlotService) http.Handler {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.Use(gin.Logger(), gin.Recovery())
+	router.Use(logger(l), gin.Recovery())
 	api := router.Group("/api")
 
 	api.GET("/calendar/:id", h.getCalendar)

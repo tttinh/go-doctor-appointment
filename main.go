@@ -48,7 +48,7 @@ func main() {
 	slotRepo := postgres.NewSlots(db)
 	userService := app.NewUserService(userRepo)
 	slotService := app.NewSlotService(slotRepo)
-	s := ports.NewHTTPServer(userService, slotService)
+	s := ports.NewHTTPServer(l, userService, slotService)
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			l.Error("unable to run server", "err", err)
