@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func logger(l *slog.Logger) gin.HandlerFunc {
+func logMiddleware(l *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Start timer.
 		start := time.Now()
@@ -33,6 +33,18 @@ func logger(l *slog.Logger) gin.HandlerFunc {
 			"response_size", c.Writer.Size(),
 		)
 
+		u, ok := userFromContext(c)
+		if ok {
+			a := slog.Group(
+				"user",
+				"id", u.ID,
+				"role", u.Role,
+				"username", u.Username,
+			)
+			l = l.With(a)
+		}
+
+		// No error.
 		if len(c.Errors) == 0 {
 			l.Info("http")
 			return
