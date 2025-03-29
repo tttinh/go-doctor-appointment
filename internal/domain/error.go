@@ -1,4 +1,4 @@
-package app
+package domain
 
 type ErrorLevel int
 

@@ -11,3 +11,13 @@ SET
   available = $2
 WHERE
   id = $1;
+
+
+-- name: FetchSlots :many
+SELECT
+  id,
+  doctor_id,
+  start_time,
+  available
+FROM
+  slot;

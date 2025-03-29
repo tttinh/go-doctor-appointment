@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/tinhtt/go-doctor-appointment/internal/adapters/postgres/sqlc"
-	"github.com/tinhtt/go-doctor-appointment/internal/app"
+	"github.com/tinhtt/go-doctor-appointment/internal/adapter/postgres/sqlc"
+	"github.com/tinhtt/go-doctor-appointment/internal/domain"
 )
 
 type Users struct {
@@ -19,13 +19,13 @@ func NewUsers(db *pgxpool.Pool) Users {
 	}
 }
 
-func (u Users) GetDoctorByUsername(ctx context.Context, username string) (app.Doctor, error) {
+func (u Users) GetDoctorByUsername(ctx context.Context, username string) (domain.Doctor, error) {
 	r, err := u.FetchDoctorByUsername(ctx, username)
 	if err != nil {
-		return app.InvalidDoctor, err
+		return domain.InvalidDoctor(), err
 	}
 
-	return app.Doctor{
+	return domain.Doctor{
 		ID:        int(r.ID),
 		Username:  r.Username,
 		Password:  r.HashedPassword,
@@ -35,13 +35,13 @@ func (u Users) GetDoctorByUsername(ctx context.Context, username string) (app.Do
 	}, nil
 }
 
-func (u Users) GetPatientByUsername(ctx context.Context, username string) (app.Patient, error) {
+func (u Users) GetPatientByUsername(ctx context.Context, username string) (domain.Patient, error) {
 	r, err := u.FetchPatientByUsername(ctx, username)
 	if err != nil {
-		return app.InvalidPatient, err
+		return domain.InvalidPatient(), err
 	}
 
-	return app.Patient{
+	return domain.Patient{
 		ID:        int(r.ID),
 		Username:  r.Username,
 		Password:  r.HashedPassword,
@@ -51,17 +51,17 @@ func (u Users) GetPatientByUsername(ctx context.Context, username string) (app.P
 	}, nil
 }
 
-func (u Users) CreateDoctor(ctx context.Context, d app.Doctor) (app.Doctor, error) {
+func (u Users) CreateDoctor(ctx context.Context, d domain.Doctor) (domain.Doctor, error) {
 	r, err := u.InsertDoctor(ctx, sqlc.InsertDoctorParams{
 		Username:       d.Username,
 		Email:          d.Email,
 		HashedPassword: d.Password,
 	})
 	if err != nil {
-		return app.InvalidDoctor, nil
+		return domain.InvalidDoctor(), nil
 	}
 
-	return app.Doctor{
+	return domain.Doctor{
 		ID:        int(r.ID),
 		Username:  r.Username,
 		Password:  r.HashedPassword,
@@ -71,17 +71,17 @@ func (u Users) CreateDoctor(ctx context.Context, d app.Doctor) (app.Doctor, erro
 	}, nil
 }
 
-func (u Users) CreatePatient(ctx context.Context, p app.Patient) (app.Patient, error) {
+func (u Users) CreatePatient(ctx context.Context, p domain.Patient) (domain.Patient, error) {
 	r, err := u.InsertPatient(ctx, sqlc.InsertPatientParams{
 		Username:       p.Username,
 		Email:          p.Email,
 		HashedPassword: p.Password,
 	})
 	if err != nil {
-		return app.InvalidPatient, nil
+		return domain.InvalidPatient(), nil
 	}
 
-	return app.Patient{
+	return domain.Patient{
 		ID:        int(r.ID),
 		Username:  r.Username,
 		Password:  r.HashedPassword,

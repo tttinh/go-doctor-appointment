@@ -4,8 +4,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tinhtt/go-doctor-appointment/internal/app"
+	"github.com/tinhtt/go-doctor-appointment/internal/app/command"
+	"github.com/tinhtt/go-doctor-appointment/internal/app/query"
 	"github.com/tinhtt/go-doctor-appointment/internal/common/auth"
+	"github.com/tinhtt/go-doctor-appointment/internal/domain"
 )
 
 type doctor struct {
@@ -32,49 +34,33 @@ type signupDoctorReq struct {
 	Password string `json:"password"`
 }
 
-func (r *signupDoctorReq) bind(c *gin.Context, d *app.Doctor) error {
+func (r *signupDoctorReq) bind(c *gin.Context, cmd *command.RegisterDoctor) error {
 	if err := c.ShouldBindJSON(r); err != nil {
 		c.AbortWithError(400, err)
 		return err
 	}
 
-	d.Username = r.Username
-	d.Email = r.Email
-	d.Password = r.Password
+	cmd.Username = r.Username
+	cmd.Email = r.Email
+	cmd.Password = r.Password
 	return nil
-}
-
-type signupDoctorRes struct {
-	doctor
-}
-
-func (r *signupDoctorRes) from(d app.Doctor) {
-	r.doctor.ID = d.ID
-	r.doctor.Username = d.Username
-	r.doctor.Email = d.Email
-	r.doctor.CreatedAt = d.CreatedAt
-	r.doctor.UpdatedAt = d.UpdatedAt
 }
 
 func (h handler) signupDoctor(c *gin.Context) {
 	var (
 		req signupDoctorReq
-		d   app.Doctor
+		cmd command.RegisterDoctor
 	)
-	if err := req.bind(c, &d); err != nil {
+	if err := req.bind(c, &cmd); err != nil {
 		c.AbortWithError(400, err)
 		return
 	}
 
-	d, err := h.user.SignupDoctor(c, d)
+	err := h.app.Command.RegisterDoctor.Handle(c, cmd)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
-
-	var res signupDoctorRes
-	res.from(d)
-	c.JSON(200, res)
 }
 
 type signinDoctorReq struct {
@@ -82,13 +68,13 @@ type signinDoctorReq struct {
 	Password string `json:"password"`
 }
 
-func (r *signinDoctorReq) bind(c *gin.Context, d *app.Doctor) error {
+func (r *signinDoctorReq) bind(c *gin.Context, q *query.LoginDoctor) error {
 	if err := c.ShouldBindJSON(&r); err != nil {
 		return err
 	}
 
-	d.Username = r.Username
-	d.Password = r.Password
+	q.Username = r.Username
+	q.Password = r.Password
 	return nil
 }
 
@@ -97,7 +83,7 @@ type signinDoctorRes struct {
 	Token  string `json:"token"`
 }
 
-func (r *signinDoctorRes) from(d app.Doctor, token string) {
+func (r *signinDoctorRes) from(d domain.Doctor, token string) {
 	r.Doctor.ID = d.ID
 	r.Doctor.Username = d.Username
 	r.Doctor.Email = d.Email
@@ -109,14 +95,14 @@ func (r *signinDoctorRes) from(d app.Doctor, token string) {
 func (h handler) signinDoctor(c *gin.Context) {
 	var (
 		req signinDoctorReq
-		d   app.Doctor
+		q   query.LoginDoctor
 	)
-	if err := req.bind(c, &d); err != nil {
+	if err := req.bind(c, &q); err != nil {
 		c.AbortWithError(400, err)
 		return
 	}
 
-	d, err := h.user.SigninDoctor(c, d.Username, d.Password)
+	d, err := h.app.Query.LoginDoctor.Handle(c, q)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -143,49 +129,33 @@ type signupPatientReq struct {
 	Password string `json:"password"`
 }
 
-func (r *signupPatientReq) bind(c *gin.Context, d *app.Patient) error {
+func (r *signupPatientReq) bind(c *gin.Context, cmd *command.RegisterPatient) error {
 	if err := c.ShouldBindJSON(r); err != nil {
 		c.AbortWithError(400, err)
 		return err
 	}
 
-	d.Username = r.Username
-	d.Email = r.Email
-	d.Password = r.Password
+	cmd.Username = r.Username
+	cmd.Email = r.Email
+	cmd.Password = r.Password
 	return nil
-}
-
-type signupPatientRes struct {
-	patient
-}
-
-func (r *signupPatientRes) from(p app.Patient) {
-	r.patient.ID = p.ID
-	r.patient.Username = p.Username
-	r.patient.Email = p.Email
-	r.patient.CreatedAt = p.CreatedAt
-	r.patient.UpdatedAt = p.UpdatedAt
 }
 
 func (h handler) signupPatient(c *gin.Context) {
 	var (
 		req signupPatientReq
-		p   app.Patient
+		cmd command.RegisterPatient
 	)
-	if err := req.bind(c, &p); err != nil {
+	if err := req.bind(c, &cmd); err != nil {
 		c.AbortWithError(400, err)
 		return
 	}
 
-	p, err := h.user.SignupPatient(c, p)
+	err := h.app.Command.RegisterPatient.Handle(c, cmd)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
-
-	var res signupPatientRes
-	res.from(p)
-	c.JSON(200, res)
 }
 
 type signinPatientReq struct {
@@ -193,13 +163,13 @@ type signinPatientReq struct {
 	Password string `json:"password"`
 }
 
-func (r *signinPatientReq) bind(c *gin.Context, p *app.Patient) error {
+func (r *signinPatientReq) bind(c *gin.Context, q *query.LoginPatient) error {
 	if err := c.ShouldBindJSON(&r); err != nil {
 		return err
 	}
 
-	p.Username = r.Username
-	p.Password = r.Password
+	q.Username = r.Username
+	q.Password = r.Password
 	return nil
 }
 
@@ -208,7 +178,7 @@ type signinPatientRes struct {
 	Token   string  `json:"token"`
 }
 
-func (r *signinPatientRes) from(p app.Patient, token string) {
+func (r *signinPatientRes) from(p domain.Patient, token string) {
 	r.Patient.ID = p.ID
 	r.Patient.Username = p.Username
 	r.Patient.Email = p.Email
@@ -220,14 +190,14 @@ func (r *signinPatientRes) from(p app.Patient, token string) {
 func (h handler) signinPatient(c *gin.Context) {
 	var (
 		req signinPatientReq
-		p   app.Patient
+		q   query.LoginPatient
 	)
-	if err := req.bind(c, &p); err != nil {
+	if err := req.bind(c, &q); err != nil {
 		c.AbortWithError(400, err)
 		return
 	}
 
-	p, err := h.user.SigninPatient(c, p.Username, p.Password)
+	p, err := h.app.Query.LoginPatient.Handle(c, q)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return

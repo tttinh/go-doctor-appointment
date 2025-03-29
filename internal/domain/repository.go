@@ -1,4 +1,4 @@
-package app
+package domain
 
 import (
 	"context"
@@ -18,4 +18,9 @@ type SlotRepository interface {
 		doctorID int,
 		slots []time.Time,
 	) error
+
+	ListSlots(
+		ctx context.Context,
+		doctorID int,
+	) ([]Slot, error)
 }

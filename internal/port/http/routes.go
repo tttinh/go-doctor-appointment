@@ -10,16 +10,19 @@ import (
 	"github.com/tinhtt/go-doctor-appointment/internal/common/auth"
 )
 
+type handler struct {
+	jwt auth.JWT
+	app app.Application
+}
+
 func NewHandler(
 	l *slog.Logger,
-	u app.UserService,
-	s app.SlotService,
+	app app.Application,
 ) http.Handler {
 	jwt := auth.NewJWT("abc", 24*time.Hour)
 	h := handler{
-		jwt:  jwt,
-		user: u,
-		slot: s,
+		jwt: jwt,
+		app: app,
 	}
 
 	gin.SetMode(gin.ReleaseMode)
@@ -39,8 +42,10 @@ func NewHandler(
 	private := public.Use(authMiddleware(jwt))
 	{
 		// Slot
+		private.POST("/slot/generation", h.mockSlots)
 		private.POST("/slot", h.addSlots)
-		private.PUT("/slot/:id/availability", h.updateSlotAvailability)
+		private.GET("/slot", h.listSlots)
+		private.PATCH("/slot/:id/availability", h.changeSlotAvailability)
 
 		// Appointment
 		private.GET("/appointment", h.listAppointments)
@@ -49,10 +54,4 @@ func NewHandler(
 	}
 
 	return router
-}
-
-type handler struct {
-	jwt  auth.JWT
-	user app.UserService
-	slot app.SlotService
 }

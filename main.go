@@ -9,10 +9,10 @@ import (
 	"syscall"
 
 	"github.com/lmittmann/tint"
-	"github.com/tinhtt/go-doctor-appointment/internal/adapters"
-	"github.com/tinhtt/go-doctor-appointment/internal/adapters/postgres"
+	"github.com/tinhtt/go-doctor-appointment/internal/adapter"
+	"github.com/tinhtt/go-doctor-appointment/internal/adapter/postgres"
 	"github.com/tinhtt/go-doctor-appointment/internal/app"
-	"github.com/tinhtt/go-doctor-appointment/internal/ports"
+	"github.com/tinhtt/go-doctor-appointment/internal/port"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 	}))
 	l.Info("start server")
 
-	db, err := adapters.NewPostgresDB()
+	db, err := adapter.NewPostgresDB()
 	if err != nil {
 		l.Error("unable to connect database", "err", err)
 		os.Exit(1)
@@ -36,19 +36,18 @@ func main() {
 	defer db.Close()
 	l.Info("connect database successfully!")
 
-	err = adapters.Migrate()
-	if err != nil {
-		l.Error("unable to run database migration", "err", err)
-		os.Exit(1)
-	}
-	l.Info("run database migration successfully!")
+	// err = adapters.Migrate()
+	// if err != nil {
+	// 	l.Error("unable to run database migration", "err", err)
+	// 	os.Exit(1)
+	// }
+	// l.Info("run database migration successfully!")
 
 	// Init repositories, services, handlers.
 	userRepo := postgres.NewUsers(db)
 	slotRepo := postgres.NewSlots(db)
-	userService := app.NewUserService(userRepo)
-	slotService := app.NewSlotService(slotRepo)
-	s := ports.NewHTTPServer(l, userService, slotService)
+	a := app.NewApplication(userRepo, slotRepo)
+	s := port.NewHTTPServer(l, a)
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			l.Error("unable to run server", "err", err)
