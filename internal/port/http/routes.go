@@ -37,12 +37,13 @@ func NewHandler(
 		public.POST("/doctor/signin", h.signinDoctor)
 		public.POST("/patient/signup", h.signupPatient)
 		public.POST("/patient/signin", h.signinPatient)
+
+		public.GET("/testing/slots", h.generateSlots)
 	}
 
 	private := public.Use(authMiddleware(jwt))
 	{
 		// Slot
-		private.POST("/slot/mock", h.generateSlots)
 		private.POST("/slot", h.addSlots)
 		private.GET("/slot", h.listSlots)
 		private.PATCH("/slot/:id/availability", h.changeSlotAvailability)
