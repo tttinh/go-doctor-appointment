@@ -12,20 +12,20 @@ type LoginDoctor struct {
 	Password string
 }
 
-type LoginDoctorHandler struct {
-	userRepo domain.UserRepository
-}
+type LoginDoctorHandler func(context.Context, LoginDoctor) (domain.Doctor, error)
 
-func (h LoginDoctorHandler) Handle(ctx context.Context, query LoginDoctor) (domain.Doctor, error) {
-	d, err := h.userRepo.GetDoctorByUsername(ctx, query.Username)
-	if err != nil {
-		return domain.InvalidDoctor(), err
+func NewLoginDoctorHandler(userRepo domain.UserRepository) LoginDoctorHandler {
+	return func(ctx context.Context, query LoginDoctor) (domain.Doctor, error) {
+		d, err := userRepo.GetDoctorByUsername(ctx, query.Username)
+		if err != nil {
+			return domain.InvalidDoctor(), err
+		}
+
+		err = bcrypt.CompareHashAndPassword([]byte(d.Password), []byte(query.Password))
+		if err != nil {
+			return domain.InvalidDoctor(), domain.ErrInvalidPassword
+		}
+
+		return d, nil
 	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(d.Password), []byte(query.Password))
-	if err != nil {
-		return domain.InvalidDoctor(), domain.ErrInvalidPassword
-	}
-
-	return d, nil
 }

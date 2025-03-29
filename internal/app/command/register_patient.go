@@ -13,26 +13,26 @@ type RegisterPatient struct {
 	Password string
 }
 
-type RegisterPatientHandler struct {
-	userRepo domain.UserRepository
-}
+type RegisterPatientHandler func(context.Context, RegisterPatient) error
 
-func (h RegisterPatientHandler) Handle(ctx context.Context, cmd RegisterPatient) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(cmd.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
+func NewRegisterPatientHandler(userRepo domain.UserRepository) RegisterPatientHandler {
+	return func(ctx context.Context, cmd RegisterPatient) error {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(cmd.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		p := domain.Patient{
+			Username: cmd.Username,
+			Email:    cmd.Email,
+			Password: string(hashedPassword),
+		}
+
+		_, err = userRepo.CreatePatient(ctx, p)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	}
-
-	p := domain.Patient{
-		Username: cmd.Username,
-		Email:    cmd.Email,
-		Password: string(hashedPassword),
-	}
-
-	_, err = h.userRepo.CreatePatient(ctx, p)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

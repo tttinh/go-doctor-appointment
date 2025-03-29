@@ -42,7 +42,7 @@ func NewHandler(
 	private := public.Use(authMiddleware(jwt))
 	{
 		// Slot
-		private.POST("/slot/generation", h.mockSlots)
+		private.POST("/slot/mock", h.generateSlots)
 		private.POST("/slot", h.addSlots)
 		private.GET("/slot", h.listSlots)
 		private.PATCH("/slot/:id/availability", h.changeSlotAvailability)

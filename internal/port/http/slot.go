@@ -44,7 +44,7 @@ func generateTimeSlots(t time.Time, hours []int) []time.Time {
 	return slots
 }
 
-func (h handler) mockSlots(c *gin.Context) {
+func (h handler) generateSlots(c *gin.Context) {
 	u, _ := userFromContext(c)
 	if u.Role != "doctor" {
 		c.AbortWithError(403, domain.ErrAccessDenied)
@@ -56,7 +56,7 @@ func (h handler) mockSlots(c *gin.Context) {
 		DoctorID: u.ID,
 		Slots:    generateTimeSlots(time.Now(), workingHours),
 	}
-	err := h.app.Command.CreateSlots.Handle(c, cmd)
+	err := h.app.Command.CreateSlots(c, cmd)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -92,7 +92,7 @@ func (h handler) listSlots(c *gin.Context) {
 	}
 
 	q := query.ListSlots{DoctorID: u.ID}
-	slots, err := h.app.Query.ListSlots.Handle(c, q)
+	slots, err := h.app.Query.ListSlots(c, q)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return

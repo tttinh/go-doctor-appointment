@@ -12,10 +12,10 @@ type CreateSlots struct {
 	Slots    []time.Time
 }
 
-type CreateSlotsHandler struct {
-	slotRepo domain.SlotRepository
-}
+type CreateSlotsHandler func(context.Context, CreateSlots) error
 
-func (h CreateSlotsHandler) Handle(ctx context.Context, cmd CreateSlots) error {
-	return h.slotRepo.CreateSlots(ctx, cmd.DoctorID, cmd.Slots)
+func NewCreateSlotsHandler(slotRepo domain.SlotRepository) CreateSlotsHandler {
+	return func(ctx context.Context, cmd CreateSlots) error {
+		return slotRepo.CreateSlots(ctx, cmd.DoctorID, cmd.Slots)
+	}
 }

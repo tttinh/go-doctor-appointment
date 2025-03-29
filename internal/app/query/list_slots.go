@@ -10,10 +10,10 @@ type ListSlots struct {
 	DoctorID int
 }
 
-type ListSlotsHandler struct {
-	slotRepo domain.SlotRepository
-}
+type ListSlotsHandler func(context.Context, ListSlots) ([]domain.Slot, error)
 
-func (h ListSlotsHandler) Handle(ctx context.Context, q ListSlots) ([]domain.Slot, error) {
-	return h.slotRepo.ListSlots(ctx, q.DoctorID)
+func NewListSlotsHandler(slotRepo domain.SlotRepository) ListSlotsHandler {
+	return func(ctx context.Context, q ListSlots) ([]domain.Slot, error) {
+		return slotRepo.ListSlots(ctx, q.DoctorID)
+	}
 }

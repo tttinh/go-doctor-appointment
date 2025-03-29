@@ -56,7 +56,7 @@ func (h handler) signupDoctor(c *gin.Context) {
 		return
 	}
 
-	err := h.app.Command.RegisterDoctor.Handle(c, cmd)
+	err := h.app.Command.RegisterDoctor(c, cmd)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -102,7 +102,7 @@ func (h handler) signinDoctor(c *gin.Context) {
 		return
 	}
 
-	d, err := h.app.Query.LoginDoctor.Handle(c, q)
+	d, err := h.app.Query.LoginDoctor(c, q)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -151,7 +151,7 @@ func (h handler) signupPatient(c *gin.Context) {
 		return
 	}
 
-	err := h.app.Command.RegisterPatient.Handle(c, cmd)
+	err := h.app.Command.RegisterPatient(c, cmd)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -197,7 +197,7 @@ func (h handler) signinPatient(c *gin.Context) {
 		return
 	}
 
-	p, err := h.app.Query.LoginPatient.Handle(c, q)
+	p, err := h.app.Query.LoginPatient(c, q)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
