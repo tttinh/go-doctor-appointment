@@ -11,6 +11,37 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const fetchSlotByID = `-- name: FetchSlotByID :one
+SELECT
+  id,
+  doctor_id,
+  start_time,
+  available
+FROM
+  slot
+WHERE
+  id = $1
+`
+
+type FetchSlotByIDRow struct {
+	ID        int32
+	DoctorID  pgtype.Int4
+	StartTime pgtype.Timestamp
+	Available pgtype.Bool
+}
+
+func (q *Queries) FetchSlotByID(ctx context.Context, id int32) (FetchSlotByIDRow, error) {
+	row := q.db.QueryRow(ctx, fetchSlotByID, id)
+	var i FetchSlotByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.StartTime,
+		&i.Available,
+	)
+	return i, err
+}
+
 const fetchSlots = `-- name: FetchSlots :many
 SELECT
   id,
@@ -73,5 +104,23 @@ type UpdateSlotAvailabilityParams struct {
 
 func (q *Queries) UpdateSlotAvailability(ctx context.Context, arg UpdateSlotAvailabilityParams) error {
 	_, err := q.db.Exec(ctx, updateSlotAvailability, arg.ID, arg.Available)
+	return err
+}
+
+const updateSlotAvailable = `-- name: UpdateSlotAvailable :exec
+UPDATE slot
+SET
+  available = $2
+WHERE
+  id = $1
+`
+
+type UpdateSlotAvailableParams struct {
+	ID        int32
+	Available pgtype.Bool
+}
+
+func (q *Queries) UpdateSlotAvailable(ctx context.Context, arg UpdateSlotAvailableParams) error {
+	_, err := q.db.Exec(ctx, updateSlotAvailable, arg.ID, arg.Available)
 	return err
 }

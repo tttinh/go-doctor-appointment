@@ -14,8 +14,12 @@ import "time"
 
 type Slot struct {
 	ID        int
-	DotorID   int
+	DoctorID  int
 	Hour      time.Time
 	Available bool
 	// Status    SlotStatus
+}
+
+func InvalidSlot() Slot {
+	return Slot{}
 }

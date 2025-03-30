@@ -43,11 +43,40 @@ func (s Slots) ListSlots(ctx context.Context, doctorID int) ([]domain.Slot, erro
 	for _, r := range rows {
 		slots = append(slots, domain.Slot{
 			ID:        int(r.ID),
-			DotorID:   int(r.DoctorID.Int32),
+			DoctorID:  int(r.DoctorID.Int32),
 			Hour:      r.StartTime.Time,
 			Available: r.Available.Bool,
 		})
 	}
 
 	return slots, nil
+}
+
+func (s Slots) GetSlotByID(
+	ctx context.Context,
+	slotID int,
+) (domain.Slot, error) {
+	r, err := s.FetchSlotByID(ctx, int32(slotID))
+	if err != nil {
+		return domain.InvalidSlot(), err
+	}
+
+	return domain.Slot{
+		ID:        int(r.ID),
+		DoctorID:  int(r.DoctorID.Int32),
+		Hour:      r.StartTime.Time,
+		Available: r.Available.Bool,
+	}, nil
+}
+
+// ChangeSlotAvailability updates the availability status of a slot.
+func (s Slots) ChangeSlotAvailability(
+	ctx context.Context,
+	slotID int,
+	available bool,
+) error {
+	return s.UpdateSlotAvailability(ctx, sqlc.UpdateSlotAvailabilityParams{
+		ID:        int32(slotID),
+		Available: pgtype.Bool{Bool: available, Valid: true},
+	})
 }

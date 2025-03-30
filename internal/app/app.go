@@ -12,9 +12,10 @@ type Application struct {
 }
 
 type Command struct {
-	CreateSlots     command.CreateSlotsHandler
-	RegisterDoctor  command.RegisterDoctorHandler
-	RegisterPatient command.RegisterPatientHandler
+	CreateSlots            command.CreateSlotsHandler
+	ChangeSlotAvailability command.ChangeSlotAvailabilityHandler
+	RegisterDoctor         command.RegisterDoctorHandler
+	RegisterPatient        command.RegisterPatientHandler
 }
 
 type Query struct {
@@ -23,17 +24,18 @@ type Query struct {
 	ListSlots    query.ListSlotsHandler
 }
 
-func NewApplication(userRepo domain.UserRepository, slotRepo domain.SlotRepository) Application {
+func NewApplication(repo domain.Repository) Application {
 	return Application{
 		Command{
-			CreateSlots:     command.NewCreateSlotsHandler(slotRepo),
-			RegisterDoctor:  command.NewRegisterDoctorHandler(userRepo),
-			RegisterPatient: command.NewRegisterPatientHandler(userRepo),
+			CreateSlots:            command.NewCreateSlotsHandler(repo.Slot),
+			ChangeSlotAvailability: command.NewChangeSlotAvailabilityHandler(repo.Slot),
+			RegisterDoctor:         command.NewRegisterDoctorHandler(repo.User),
+			RegisterPatient:        command.NewRegisterPatientHandler(repo.User),
 		},
 		Query{
-			LoginDoctor:  query.NewLoginDoctorHandler(userRepo),
-			LoginPatient: query.NewLoginPatientHandler(userRepo),
-			ListSlots:    query.NewListSlotsHandler(slotRepo),
+			LoginDoctor:  query.NewLoginDoctorHandler(repo.User),
+			LoginPatient: query.NewLoginPatientHandler(repo.User),
+			ListSlots:    query.NewListSlotsHandler(repo.Slot),
 		},
 	}
 }

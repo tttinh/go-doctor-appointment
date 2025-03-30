@@ -21,3 +21,23 @@ SELECT
   available
 FROM
   slot;
+
+
+-- name: FetchSlotByID :one
+SELECT
+  id,
+  doctor_id,
+  start_time,
+  available
+FROM
+  slot
+WHERE
+  id = $1;
+
+
+-- name: UpdateSlotAvailable :exec
+UPDATE slot
+SET
+  available = $2
+WHERE
+  id = $1;
